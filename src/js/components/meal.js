@@ -13,7 +13,6 @@ import moment from 'moment';
 export class MealLayout extends React.Component {
 
     _getMeal() {
-
         return {
             "user": {
                 "firstName": "John",

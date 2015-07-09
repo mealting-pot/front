@@ -24,12 +24,16 @@ export class Layout extends React.Component {
         super(props);
 
         this.state = {
-            progress: false,
-            //leftNav: <>
+            progress: false
         };
 
         this._showProgressBar = this._showProgressBar.bind(this);
         this._hideProgressBar = this._hideProgressBar.bind(this);
+        this._tapMenuIcon = this._tapMenuIcon.bind(this);
+    }
+
+    _tapMenuIcon() {
+        this.refs.leftNav.toggle();
     }
 
     render() {
@@ -44,8 +48,8 @@ export class Layout extends React.Component {
             <div style={ componentStyle }>
                 <LeftNav ref="leftNav" docked={false} menuItems={[{ text: 'get-started' }]}/>
                 { window.navigator.standalone && <div style={{ height: 20, backgroundColor: this.context.muiTheme.palette.primary2Color }}/> }
-                <Header/>
-                { this.state.progress == true ? <LinearProgress mode="indeterminate"/> : '' }
+                <Header onLeftIconButtonTouchTap={ this._tapMenuIcon } />
+                { this.state.progress == true && <LinearProgress mode="indeterminate"/> }
                 <Content>
                     <Locations hash onBeforeNavigation={this._showProgressBar} onNavigation={this._hideProgressBar}>
                         <Location path="/" handler={Meals} />
