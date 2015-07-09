@@ -23,7 +23,7 @@ export class Rating extends React.Component {
             }
         }
         return (
-            <div style={{ flex: 1, textAlign: 'right', color: color }}>
+            <div style={{ WebkitFlex: 1, textAlign: 'right', color: color }}>
                 { stars }
             </div>
         )

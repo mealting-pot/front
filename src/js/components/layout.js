@@ -8,7 +8,7 @@ import { Header }   from './header.js';
 import { Content }  from './content.js';
 import { Meals, MealLayout }    from './meal.js';
 import { Location, Locations } from 'react-router-component';
-import { LinearProgress  } from 'material-ui';
+import { LinearProgress, LeftNav } from 'material-ui';
 
 export class Layout extends React.Component {
 
@@ -24,7 +24,8 @@ export class Layout extends React.Component {
         super(props);
 
         this.state = {
-            progress: false
+            progress: false,
+            //leftNav: <>
         };
 
         this._showProgressBar = this._showProgressBar.bind(this);
@@ -41,6 +42,8 @@ export class Layout extends React.Component {
 
         return (
             <div style={ componentStyle }>
+                <LeftNav ref="leftNav" docked={false} menuItems={[{ text: 'get-started' }]}/>
+                { window.navigator.standalone && <div style={{ height: 20, backgroundColor: this.context.muiTheme.palette.primary2Color }}/> }
                 <Header/>
                 { this.state.progress == true ? <LinearProgress mode="indeterminate"/> : '' }
                 <Content>
@@ -53,3 +56,7 @@ export class Layout extends React.Component {
         );
     }
 }
+
+Layout.contextTypes = {
+    muiTheme: React.PropTypes.object
+};

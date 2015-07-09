@@ -54,12 +54,12 @@ export class MealLayout extends React.Component {
                     <img src={this.state.meal.pictures[0]}/>
                 </CardMedia>
                 <div style={{ display: '-webkit-flex', textAlign: 'center', padding: 8 }}>
-                    <div style={{ WebkitFlex: 1, marginRight: 4, display: '-webkit-flex', WebkitflexDirection: 'column', textAlign: 'center' }}><i style={{ WebkitFlex: 1 }} className="material-icons" >place</i><span style={{ WebkitFlex: 1 }} >{ this.state.meal.city }</span></div>
-                    <div style={{ WebkitFlex: 1, marginRight: 4, display: '-webkit-flex', WebkitflexDirection: 'column', textAlign: 'center' }}><i style={{ WebkitFlex: 1 }} className="material-icons" >today</i><span style={{ WebkitFlex: 1 }} >{ this.state.meal.date.format('ddd. D/M') }</span></div>
+                    <div style={{ WebkitFlex: 1, marginRight: 4, display: '-webkit-flex', WebkitFlexDirection: 'column', textAlign: 'center' }}><i style={{ WebkitFlex: 1 }} className="material-icons" >place</i><span style={{ WebkitFlex: 1 }} >{ this.state.meal.city }</span></div>
+                    <div style={{ WebkitFlex: 1, marginRight: 4, display: '-webkit-flex', WebkitFlexDirection: 'column', textAlign: 'center' }}><i style={{ WebkitFlex: 1 }} className="material-icons" >today</i><span style={{ WebkitFlex: 1 }} >{ this.state.meal.date.format('ddd. D/M') }</span></div>
                 </div>
                 <div style={{ display: '-webkit-flex', textAlign: 'center', padding: 8 }}>
-                    <div style={{ WebkitFlex: 1, marginRight: 4, display: '-webkit-flex', WebkitflexDirection: 'column', textAlign: 'center' }}><i style={{ WebkitFlex: 1 }} className="material-icons" >people</i><span style={{ WebkitFlex: 1 }} >{ this.state.meal.seats + ' remaining seats' }</span></div>
-                    <div style={{ WebkitFlex: 1, marginRight: 4, display: '-webkit-flex', WebkitflexDirection: 'column', textAlign: 'center' }}><i style={{ WebkitFlex: 1 }} className="material-icons" >credit_card</i><span style={{ WebkitFlex: 1 }} >{ `£${this.state.meal.price} per meal` }</span></div>
+                    <div style={{ WebkitFlex: 1, marginRight: 4, display: '-webkit-flex', WebkitFlexDirection: 'column', textAlign: 'center' }}><i style={{ WebkitFlex: 1 }} className="material-icons" >people</i><span style={{ WebkitFlex: 1 }} >{ this.state.meal.seats + ' remaining seats' }</span></div>
+                    <div style={{ WebkitFlex: 1, marginRight: 4, display: '-webkit-flex', WebkitFlexDirection: 'column', textAlign: 'center' }}><i style={{ WebkitFlex: 1 }} className="material-icons" >credit_card</i><span style={{ WebkitFlex: 1 }} >{ `£${this.state.meal.price} per meal` }</span></div>
                 </div>
                 <iframe
                     frameborder="0" style={{ border: 0, width: '100%' }}

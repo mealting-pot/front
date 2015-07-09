@@ -39,12 +39,12 @@ export class CardHeader extends React.Component {
                 padding: 16,
                 fontWeight: Styles.Typography.fontWeightMedium,
                 boxSizing: 'border-box',
-                display: 'flex'
+                display: '-webkit-flex'
             },
             text: {
                 display: 'inline-block',
                 verticalAlign: 'top',
-                flex: 1
+                WebkitFlex: 1
             },
             avatar: {
                 marginRight: 16

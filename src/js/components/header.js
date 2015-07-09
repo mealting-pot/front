@@ -9,7 +9,7 @@ import { AppBar }   from 'material-ui';
 export class Header extends React.Component {
     render() {
         return (
-            <AppBar/>
+            <AppBar title='Mealting pot'/>
         );
     }
 }
