@@ -6,14 +6,19 @@
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
 import React        from 'react';
+import Router       from 'react-router';
+import { Route, RouteHandler, HashLocation }    from 'react-router';
 import { Styles }   from 'material-ui';
+import { PostMealLayout } from './js/components/post-meal.js';
+import { MealsLayout }    from './js/components/meal.js';
+import { LoginLayout }  from './js/components/login.js';
 import { Layout }   from './js/components/layout.js';
 
 var ThemeManager = new Styles.ThemeManager();
 
 injectTapEventPlugin();
 
-class APP extends React.Component {
+class App extends React.Component {
 
     getChildContext() {
         return {
@@ -23,13 +28,25 @@ class APP extends React.Component {
 
     render() {
         return (
-            <Layout/>
+            <Layout>
+                <RouteHandler/>
+            </Layout>
         );
     }
 }
 
-APP.childContextTypes = {
+App.childContextTypes = {
     muiTheme: React.PropTypes.object
 };
 
-React.render(<APP/>, document.getElementById('app'));
+var routes = (
+    <Route handler={App}>
+        <Route path="/" handler={MealsLayout} />
+        <Route path="login" handler={LoginLayout} />
+        <Route path="post-meal" handler={PostMealLayout} />
+    </Route>
+);
+
+Router.run(routes, HashLocation, (Root) => {
+    React.render(<Root/>, document.getElementById('app'));
+});

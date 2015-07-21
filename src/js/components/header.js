@@ -4,7 +4,9 @@
 'use strict';
 
 import React        from 'react';
-import { AppBar }   from 'material-ui';
+import { AppBar, FlatButton }   from 'material-ui';
+
+import { Link } from 'react-router';
 
 export class Header extends React.Component {
     render() {

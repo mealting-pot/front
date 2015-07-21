@@ -4,10 +4,12 @@
 'use strict';
 
 import React from 'react';
-import { Styles, Card, CardTitle, CardMedia, Paper, RaisedButton } from 'material-ui';
-import { Link } from 'react-router-component';
+import { Styles, Card, CardTitle, CardMedia, Paper, RaisedButton, FontIcon } from 'material-ui';
+import { Link } from 'react-router';
 import { CardHeader } from './material/card-header.js';
 import { Rating } from './rating.js';
+import { mealsStore } from '../stores/meals.js';
+import { mealsActions } from '../actions/meals.js';
 import moment from 'moment';
 
 export class MealLayout extends React.Component {
@@ -89,6 +91,8 @@ export class Meal extends React.Component {
 
     render() {
 
+        var date = moment(this.props.meal.date);
+
         return (
             <Card onClick={this._onClick} style={{ marginBottom: 8 }}>
                 <CardHeader style={{ display: '-webkit-flex' }}
@@ -106,7 +110,7 @@ export class Meal extends React.Component {
                         <i style={{ fontSize: 12 }} className="material-icons">place</i>{ ' ' + this.props.meal.city }
                     </div>
                     <div style={{ WebkitFlex: 1, textAlign: 'center' }}>
-                        <i style={{ fontSize: 12 }} className="material-icons">today</i>{ ' ' + this.props.meal.date.format('ddd. D/M') }
+                        <i style={{ fontSize: 12 }} className="material-icons">today</i>{ ' ' + date.format('ddd. D/M') }
                     </div>
                     <div style={{ WebkitFlex: 1, textAlign: 'center' }}>
                         <i style={{ fontSize: 12 }} className="material-icons">people</i>{' ' + this.props.meal.seats + ' seats'}
@@ -116,7 +120,7 @@ export class Meal extends React.Component {
                     </div>
                 </div>
                 }/>}>
-                    <img src={this.props.meal.pictures[0]}/>
+                    { this.props.meal.pictures.length > 0 && <img src={this.props.meal.pictures[0].url}/> }
                 </CardMedia>
             </Card>
         );
@@ -128,112 +132,47 @@ Meal.contextTypes = {
     router: React.PropTypes.func
 };
 
-export class Meals extends React.Component {
+export class MealsLayout extends React.Component {
 
     constructor() {
         super();
-
+        mealsActions.load();
         this.state = {
             meals: this._getMeals()
-        }
+        };
+
+        this._onChange = this._onChange.bind(this);
+    }
+
+    componentDidMount() {
+        mealsStore.addChangeListener(this._onChange);
+    }
+
+    componentWillUnmount() {
+        mealsStore.removeChangeListener(this._onChange);
+    }
+
+    _onChange() {
+        this.setState({
+            meals: this._getMeals()
+        });
     }
 
     _getMeals() {
-        return [
-            {
-                "user": {
-                    "firstName": "John",
-                    "bio": "Arsenal fanboy.",
-                    "avatar": "http://lorempixel.com/100/100/people/",
-                    "rating": 4.4
-                },
-                "id": 1,
-                "title": "Indian Curry",
-                "city": "Woolf college",
-                "date": moment(),
-                "price": 12.50,
-                "seats": 8,
-                "pictures": ["http://lorempixel.com/600/337/food/"]
-            }, {
-                "user": {
-                    "firstName": "John",
-                    "bio": "Arsenal fanboy.",
-                    "avatar": "http://lorempixel.com/100/100/people/",
-                    "rating": 4.4
-                },
-                "id": 1,
-                "title": "Indian Curry",
-                "city": "Woolf college",
-                "date": moment(),
-                "price": 12.50,
-                "seats": 8,
-                "pictures": ["http://lorempixel.com/600/337/food/"]
-            }, {
-                "user": {
-                    "firstName": "John",
-                    "bio": "Arsenal fanboy.",
-                    "avatar": "http://lorempixel.com/100/100/people/",
-                    "rating": 4.4
-                },
-                "id": 1,
-                "title": "Indian Curry",
-                "city": "Woolf college",
-                "date": moment(),
-                "price": 12.50,
-                "seats": 8,
-                "pictures": ["http://lorempixel.com/600/337/food/"]
-            }, {
-                "user": {
-                    "firstName": "John",
-                    "bio": "Arsenal fanboy.",
-                    "avatar": "http://lorempixel.com/100/100/people/",
-                    "rating": 4.4
-                },
-                "id": 1,
-                "title": "Indian Curry",
-                "city": "Woolf college",
-                "date": moment(),
-                "price": 12.50,
-                "seats": 8,
-                "pictures": ["http://lorempixel.com/600/337/food/"]
-            }, {
-                "user": {
-                    "firstName": "John",
-                    "bio": "Arsenal fanboy.",
-                    "avatar": "http://lorempixel.com/100/100/people/",
-                    "rating": 4.4
-                },
-                "id": 1,
-                "title": "Indian Curry",
-                "city": "Woolf college",
-                "date": moment(),
-                "price": 12.50,
-                "seats": 8,
-                "pictures": ["http://lorempixel.com/600/337/food/"]
-            }, {
-                "user": {
-                    "firstName": "John",
-                    "bio": "Arsenal fanboy.",
-                    "avatar": "http://lorempixel.com/100/100/people/",
-                    "rating": 4.4
-                },
-                "id": 1,
-                "title": "Indian Curry",
-                "city": "Woolf college",
-                "date": moment(),
-                "price": 12.50,
-                "seats": 8,
-                "pictures": ["http://lorempixel.com/600/337/food/"]
-            }
-        ];
+        return mealsStore.getAll();
     }
 
     render() {
+
         var meals = this.state.meals.map((meal, i) => <Meal meal={ meal } key={ i } />);
 
         return (
             <div>
                 { meals }
+                <div style={{ position: 'fixed', bottom: 0, left: 0, padding: 10, width: '100%' }}>
+                    <RaisedButton style={{ width: 'calc(100% - 20px)', textAlign: 'center' }} primary={true} label="Filters">
+                    </RaisedButton>
+                </div>
             </div>
         );
     }

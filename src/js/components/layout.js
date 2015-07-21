@@ -4,11 +4,45 @@
 'use strict';
 
 import React        from 'react';
+import { Navigation } from 'react-router';
+import reactMixin   from 'react-mixin';
 import { Header }   from './header.js';
 import { Content }  from './content.js';
-import { Meals, MealLayout }    from './meal.js';
-import { Location, Locations } from 'react-router-component';
-import { LinearProgress, LeftNav } from 'material-ui';
+import { LoginLayout } from './login.js';
+import { LinearProgress, LeftNav, MenuItem } from 'material-ui';
+
+class AppLeftNav extends React.Component {
+
+    constructor(props) {
+        super(props);
+
+        this._onChange = this._onChange.bind(this);
+    }
+
+    _onChange(e, index, item) {
+        console.log(this.context);
+        this.transitionTo(item.route);
+    }
+
+    toggle() {
+        this.refs.leftNav.toggle();
+    }
+
+    render () {
+
+        var menuItems = [
+            { text: 'Home', route: '/' },
+            { text: 'Register / Login', route: '/login' },
+            { text: 'Post a meal', route: '/post-meal' }
+        ];
+
+        return (
+            <LeftNav ref="leftNav" onChange={this._onChange} docked={false} menuItems={menuItems}/>
+        )
+    }
+}
+
+reactMixin.onClass(AppLeftNav, Navigation);
 
 export class Layout extends React.Component {
 
@@ -33,6 +67,7 @@ export class Layout extends React.Component {
     }
 
     _tapMenuIcon() {
+        console.log('tap', arguments);
         this.refs.leftNav.toggle();
     }
 
@@ -44,17 +79,15 @@ export class Layout extends React.Component {
             WebkitFlex: 1
         };
 
+
         return (
             <div style={ componentStyle }>
-                <LeftNav ref="leftNav" docked={false} menuItems={[{ text: 'get-started' }]}/>
+                <AppLeftNav ref="leftNav" />
                 { window.navigator.standalone && <div style={{ height: 20, backgroundColor: this.context.muiTheme.palette.primary2Color }}/> }
                 <Header onLeftIconButtonTouchTap={ this._tapMenuIcon } />
                 { this.state.progress == true && <LinearProgress mode="indeterminate"/> }
                 <Content>
-                    <Locations hash onBeforeNavigation={this._showProgressBar} onNavigation={this._hideProgressBar}>
-                        <Location path="/" handler={Meals} />
-                        <Location path="/meals/:mealId" handler={MealLayout} />
-                    </Locations>
+                    { this.props.children }
                 </Content>
             </div>
         );
