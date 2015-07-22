@@ -64,13 +64,13 @@ class LoginStore extends EventEmitter {
 
 var loginStore = new LoginStore();
 
-dispatcher.register(function (action) {
+loginStore.dispatchToken = dispatcher.register(function (action) {
     switch (action.actionType) {
         case constants.LOGIN_SUCCESS:
             loginStore._login(action.token);
             loginStore.emitChange();
             break;
-        case constants.LOAD_USER:
+        case constants.LOAD_SELF:
             loginStore._loadUser(action.user);
             loginStore.emitChange();
             break;

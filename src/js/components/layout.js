@@ -20,7 +20,6 @@ class AppLeftNav extends React.Component {
     }
 
     _onChange(e, index, item) {
-        console.log(this.context);
         this.transitionTo(item.route);
     }
 
@@ -67,7 +66,6 @@ export class Layout extends React.Component {
     }
 
     _tapMenuIcon() {
-        console.log('tap', arguments);
         this.refs.leftNav.toggle();
     }
 

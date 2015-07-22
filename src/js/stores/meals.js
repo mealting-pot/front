@@ -12,28 +12,35 @@ class MealsStore extends EventEmitter {
 
     constructor() {
         super();
-        this.meals = [];
-        this.postState = null;
+
+        this.setMaxListeners(0);
+        this.searchResults = [];
+        this.meals = {};
+        this.mealsPictures = {};
     }
 
-    _load(datas) {
-        this.meals = datas;
+    _setSearchResults(searchResults) {
+        this.searchResults = searchResults;
     }
 
     _add(meal) {
-        this.meals.push(meal);
+        this.meals[meal.id] = meal;
     }
 
-    getAll() {
-        return this.meals;
+    _addPictures(mealId, pictures) {
+        this.mealsPictures[mealId] = pictures;
     }
 
-    getPostState() {
-        return this.postState;
+    getSearchResults() {
+        return this.searchResults;
     }
 
-    _setPostState(state) {
-        this.postState = state;
+    getMeal(id) {
+        return this.meals[id];
+    }
+
+    getMealPictures(mealId) {
+        return this.mealsPictures[mealId];
     }
 
     emitChange() {
@@ -51,19 +58,22 @@ class MealsStore extends EventEmitter {
 
 var mealsStore = new MealsStore();
 
-dispatcher.register(function (action) {
+mealsStore.dispatchToken = dispatcher.register(function (action) {
     switch (action.actionType) {
-        case constants.LOAD_MEALS:
-            mealsStore._load(action.meals);
+        case constants.QUERY_MEALS:
+            mealsStore._setSearchResults(action.meals);
             mealsStore.emitChange();
             break;
-        case constants.POST_MEAL:
-            mealsStore._setPostState(constants.API_FINISHED);
+        case constants.LOAD_MEAL:
             mealsStore._add(action.meal);
             mealsStore.emitChange();
             break;
-        case constants.RESET_POST_MEAL:
-            mealsStore._setPostState(null);
+        case constants.LOAD_MEAL_PICTURES:
+            mealsStore._addPictures(action.mealId, action.pictures);
+            mealsStore.emitChange();
+            break;
+        case constants.POST_MEAL:
+            mealsStore._add(action.meal);
             mealsStore.emitChange();
             break;
         default :

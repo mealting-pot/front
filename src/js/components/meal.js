@@ -4,12 +4,21 @@
 'use strict';
 
 import React from 'react';
-import { Styles, Card, CardTitle, CardMedia, Paper, RaisedButton, FontIcon } from 'material-ui';
+import { Styles, Card, CardTitle, CardMedia, Paper, RaisedButton, FontIcon, LinearProgress } from 'material-ui';
+import { Navigation } from 'react-router';
+import reactMixin   from 'react-mixin';
+
 import { Link } from 'react-router';
 import { CardHeader } from './material/card-header.js';
 import { Rating } from './rating.js';
 import { mealsStore } from '../stores/meals.js';
+import { usersStore } from '../stores/users.js';
+import { picturesStore } from '../stores/pictures.js';
+
 import { mealsActions } from '../actions/meals.js';
+import { usersActions } from '../actions/users.js';
+import { picturesActions } from '../actions/pictures.js';
+
 import moment from 'moment';
 
 export class MealLayout extends React.Component {
@@ -41,7 +50,7 @@ export class MealLayout extends React.Component {
 
     render() {
         return (
-            <Card style={{ marginBottom: 8 }}>
+            <Card className="meal-card">
                 <CardHeader style={{ display: '-webkit-flex' }}
                             title={
                         <div style={{ display: '-webkit-flex' }}>
@@ -76,51 +85,198 @@ export class MealLayout extends React.Component {
     }
 }
 
+class MealCardHeader extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {};
+        this.state.user = usersStore.getUser(this.props.userId);
+        if (!this.state.user) {
+            usersActions.loadUser(this.props.userId);
+        }
+
+        this._onChange = this._onChange.bind(this);
+    }
+
+    _onChange() {
+        var user = usersStore.getUser(this.props.userId);
+
+        if (user) {
+            this.setState({
+                user
+            });
+        }
+    }
+
+    componentDidMount() {
+        usersStore.addChangeListener(this._onChange);
+    }
+
+    componentWillUnmount() {
+        usersStore.removeChangeListener(this._onChange);
+    }
+
+    render() {
+
+        if (!this.state.user) {
+            return (
+                <LinearProgress mode="indeterminate"  />
+            )
+        }
+
+        return (
+            <CardHeader style={{ display: '-webkit-flex' }}
+                        title={
+                        <div style={{ display: '-webkit-flex' }}>
+                            <div style={{ WebkitFlex: 1 }}>{ this.state.user.firstName }</div>
+                            <Rating score={ this.state.user.rating } />
+                        </div>
+                    }
+                        subtitle={ this.state.user.bio }
+                        avatar={ this.state.user.avatar }/>
+        );
+    }
+}
+
+class MealPicture extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this._onMealsChange = this._onMealsChange.bind(this);
+        this._onPicturesChange = this._onPicturesChange.bind(this);
+
+        this.state = {};
+        this.state.pictures = mealsStore.getMealPictures(this.props.mealId);
+
+        if (this.state.pictures) {
+            if (this.state.pictures[0]) {
+                this.state.picture = picturesStore.getPicture(this.state.pictures[0].id);
+                if (!this.state.picture) {
+                    picturesStore.loadPicture(this.state.pictures[0].id);
+                }
+            }
+        } else {
+            mealsActions.loadPictures(this.props.mealId);
+        }
+
+    }
+
+    _onMealsChange() {
+        var pictures = mealsStore.getMealPictures(this.props.mealId);
+        this.setState({
+            pictures
+        });
+        if (pictures && pictures[0]) {
+            var picture = picturesStore.getPicture(pictures[0].id);
+            this.setState({
+                picture
+            });
+            if (!picture) {
+                picturesActions.loadPicture(pictures[0].id);
+            }
+        }
+    }
+
+    _onPicturesChange() {
+        if (this.state.pictures && this.state.pictures[0]) {
+            var picture = picturesStore.getPicture(this.state.pictures[0].id);
+            if (!picture) {
+                picturesActions.loadPicture(this.state.pictures[0].id);
+            } else {
+                this.setState({
+                    picture
+                });
+            }
+        }
+    }
+
+    componentDidMount() {
+        mealsStore.addChangeListener(this._onMealsChange);
+        picturesStore.addChangeListener(this._onPicturesChange);
+    }
+
+    componentWillUnmount() {
+        mealsStore.removeChangeListener(this._onMealsChange);
+        picturesStore.removeChangeListener(this._onPicturesChange);
+    }
+
+    render() {
+        if (!this.state.picture) {
+            return (
+                <LinearProgress mode="indeterminate"  />
+            );
+        }
+
+        return (
+            <img className="meal-image" src={this.state.picture.data} style={{ width: '100%', marginBottom: -4 }} />
+        );
+    }
+}
+
 export class Meal extends React.Component {
 
     constructor(props) {
         super(props);
 
         this._onClick = this._onClick.bind(this);
+        this._onChange = this._onChange.bind(this);
+
+        this.state = {};
+        this.state.meal = mealsStore.getMeal(this.props.meal.id);
+        if (!this.state.meal) {
+            mealsActions.loadMeal(this.props.meal.id);
+        }
     }
 
     _onClick() {
-        console.log(this.context);
-        this.context.router.navigate(`/meals/${this.props.meal.id}`);
+        this.transitionTo(`/meal/${this.props.meal.id}`);
+    }
+
+    _onChange() {
+        this.setState({
+            meal: mealsStore.getMeal(this.props.meal.id)
+        });
+    }
+
+    componentDidMount() {
+        mealsStore.addChangeListener(this._onChange);
+    }
+
+    componentWillUnmount() {
+        mealsStore.removeChangeListener(this._onChange);
     }
 
     render() {
 
-        var date = moment(this.props.meal.date);
+        if (!this.state.meal) {
+            return (
+                <Card>
+                    <LinearProgress mode="indeterminate"  />
+                </Card>
+            )
+        }
 
+        var date = moment(this.state.meal.date);
         return (
-            <Card onClick={this._onClick} style={{ marginBottom: 8 }}>
-                <CardHeader style={{ display: '-webkit-flex' }}
-                    title={
-                        <div style={{ display: '-webkit-flex' }}>
-                            <div style={{ WebkitFlex: 1 }}>{ this.props.meal.user.firstName }</div>
-                            <Rating score={ this.props.meal.user.rating } />
+            <Card className="meal-card" style={{ marginTop: 8 }} onClick={this._onClick}>
+                <MealCardHeader userId={this.state.meal.userId} />
+                <CardMedia style={{ minHeight: 97 }} overlay={<CardTitle title={ this.state.meal.title } subtitle={
+                    <div style={{ display: '-webkit-flex' }}>
+                        <div style={{ WebkitFlex: 1, textAlign: 'left', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                            <i style={{ fontSize: 12 }} className="material-icons">place</i>{ ' ' + this.state.meal.city }
                         </div>
-                    }
-                    subtitle={ this.props.meal.user.bio }
-                    avatar={ this.props.meal.user.avatar }/>
-                <CardMedia overlay={<CardTitle title={ this.props.meal.title } subtitle={
-                <div style={{ display: '-webkit-flex' }}>
-                    <div style={{ WebkitFlex: 1, textAlign: 'left', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-                        <i style={{ fontSize: 12 }} className="material-icons">place</i>{ ' ' + this.props.meal.city }
+                        <div style={{ WebkitFlex: 1, textAlign: 'center' }}>
+                            <i style={{ fontSize: 12 }} className="material-icons">today</i>{ ' ' + date.format('ddd. D/M') }
+                        </div>
+                        <div style={{ WebkitFlex: 1, textAlign: 'center' }}>
+                            <i style={{ fontSize: 12 }} className="material-icons">people</i>{' ' + this.state.meal.seats + ' seats'}
+                        </div>
+                        <div style={{ WebkitFlex: 1, textAlign: 'right' }}>
+                            <i style={{ fontSize: 12 }} className="material-icons">credit_card</i>{ ' £' + this.state.meal.price + '/p.' }
+                        </div>
                     </div>
-                    <div style={{ WebkitFlex: 1, textAlign: 'center' }}>
-                        <i style={{ fontSize: 12 }} className="material-icons">today</i>{ ' ' + date.format('ddd. D/M') }
-                    </div>
-                    <div style={{ WebkitFlex: 1, textAlign: 'center' }}>
-                        <i style={{ fontSize: 12 }} className="material-icons">people</i>{' ' + this.props.meal.seats + ' seats'}
-                    </div>
-                    <div style={{ WebkitFlex: 1, textAlign: 'right' }}>
-                        <i style={{ fontSize: 12 }} className="material-icons">credit_card</i>{ ' £' + this.props.meal.price + '/p.' }
-                    </div>
-                </div>
                 }/>}>
-                    { this.props.meal.pictures.length > 0 && <img src={this.props.meal.pictures[0].url}/> }
+                    <MealPicture mealId={ this.state.meal.id } />
                 </CardMedia>
             </Card>
         );
@@ -128,15 +284,13 @@ export class Meal extends React.Component {
     }
 }
 
-Meal.contextTypes = {
-    router: React.PropTypes.func
-};
+reactMixin.onClass(Meal, Navigation);
 
 export class MealsLayout extends React.Component {
 
     constructor() {
         super();
-        mealsActions.load();
+        mealsActions.queryMeals();
         this.state = {
             meals: this._getMeals()
         };
@@ -159,7 +313,7 @@ export class MealsLayout extends React.Component {
     }
 
     _getMeals() {
-        return mealsStore.getAll();
+        return mealsStore.getSearchResults();
     }
 
     render() {
@@ -169,8 +323,8 @@ export class MealsLayout extends React.Component {
         return (
             <div>
                 { meals }
-                <div style={{ position: 'fixed', bottom: 0, left: 0, padding: 10, width: '100%' }}>
-                    <RaisedButton style={{ width: 'calc(100% - 20px)', textAlign: 'center' }} primary={true} label="Filters">
+                <div style={{ position: 'fixed', bottom: 0, left: 0, padding: 10, width: 'calc(100% - 36px)' }}>
+                    <RaisedButton style={{ width: '100%', textAlign: 'center' }} primary={true} label="Filters">
                     </RaisedButton>
                 </div>
             </div>

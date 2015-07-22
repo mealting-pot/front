@@ -12,6 +12,7 @@ export class Content extends React.Component {
             display: 'block',
             position: 'relative',
             overflow: 'auto',
+            WebkitFlex: 1,
             WebkitOverflowScrolling: 'touch',
             padding: 8
         };

@@ -9,15 +9,38 @@ import { dispatcher }   from '../dispatcher.js';
 import { constants }    from '../constants.js';
 
 export var mealsActions = {
-    load: function () {
+    queryMeals: function (filters) {
         request({
             uri: 'http://localhost:9999/meals',
             json: true
         }, function (err, res, body) {
             dispatcher.dispatch({
-                actionType: constants.LOAD_MEALS,
+                actionType: constants.QUERY_MEALS,
                 meals: body || []
             });
+        });
+    },
+    loadMeal: function (mealId) {
+        request({
+            uri: constants.APP_URL + '/meals/' + mealId,
+            json: true
+        }, function (err, res, body) {
+            dispatcher.dispatch({
+                actionType: constants.LOAD_MEAL,
+                meal: body
+            });
+        });
+    },
+    loadPictures: function (mealId) {
+        request({
+            uri: constants.APP_URL + '/meals/' + mealId + '/pictures',
+            json: true
+        }, function (err, res, body) {
+            dispatcher.dispatch({
+                actionType: constants.LOAD_MEAL_PICTURES,
+                pictures: body,
+                mealId: mealId
+            })
         });
     },
     postMeal: function (meal, files) {
@@ -45,7 +68,6 @@ export var mealsActions = {
                 }, function (err, res, body) {
                     var xhr = new XMLHttpRequest();
                     xhr.open("PUT", body.aws.signed_request);
-                    xhr.setRequestHeader('x-amz-acl', 'public-read');
                     xhr.onload = function() {
                         if (xhr.status === 200) {
                             console.log('FUCK');

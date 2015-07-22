@@ -10,7 +10,7 @@ import Router       from 'react-router';
 import { Route, RouteHandler, HashLocation }    from 'react-router';
 import { Styles }   from 'material-ui';
 import { PostMealLayout } from './js/components/post-meal.js';
-import { MealsLayout }    from './js/components/meal.js';
+import { MealsLayout, MealLayout }    from './js/components/meal.js';
 import { LoginLayout }  from './js/components/login.js';
 import { Layout }   from './js/components/layout.js';
 
@@ -44,6 +44,7 @@ var routes = (
         <Route path="/" handler={MealsLayout} />
         <Route path="login" handler={LoginLayout} />
         <Route path="post-meal" handler={PostMealLayout} />
+        <Route path="meal/:mealId" handler={MealLayout} />
     </Route>
 );
 

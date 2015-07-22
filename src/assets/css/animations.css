@@ -1,0 +1,24 @@
+@-webkit-keyframes card-slide {
+    0% { margin-top: 100% }
+    80% { margin-top: 0 }
+    100% { margin-top: 8px }
+}
+
+@-webkit-keyframes image-fade {
+    0% {
+        max-height: 0;
+        opacity: 0;
+    }
+    100% {
+        max-height: 1000px;
+        opacity: 1;
+    }
+}
+
+.meal-card {
+    -webkit-animation: card-slide 2s;
+}
+
+.meal-image {
+    -webkit-animation: image-fade 2s;
+}
